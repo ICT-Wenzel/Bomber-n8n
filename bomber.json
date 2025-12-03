@@ -1,0 +1,1064 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.botType }}",
+                    "rightValue": "basic",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "d7dcb9af-29f7-4214-8e45-8742bdf7c19f"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4b149a38-19e7-4562-8a91-9dd18790a995",
+                    "leftValue": "={{ $json.body.botType }}",
+                    "rightValue": "wiki",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2fb75ab7-12c2-443c-bb49-f1b18c898ddb",
+                    "leftValue": "={{ $json.body.botType }}",
+                    "rightValue": "documentation",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "bbbf0f5f-cf09-45a5-96a6-6179f99754c7",
+                    "leftValue": "={{ $json.body.botType }}",
+                    "rightValue": "add-to-doku",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1520,
+        -1320
+      ],
+      "id": "2c7dbaae-f9e2-46de-b7be-997165ce18c5",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1920,
+        -1384
+      ],
+      "id": "c6a82810-c25a-456f-9e16-4b892b40b50d",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1696,
+        -1416
+      ],
+      "id": "e1d7d80c-33f2-40f8-b384-2c507802edb0",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Run Once Mode\nconst item = $input.all()[0].json;\n\n// Session-ID erzeugen\nitem.sessionId = $workflow.id || \"session_\" + Date.now();\n\n\nreturn [{ json: item }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1744,
+        -1288
+      ],
+      "id": "6231c346-097f-4864-8bda-ee9337cded53",
+      "name": "Create Workflow ID"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "de6fb1be-8d95-4652-9c6d-7f8a96ffe26e",
+        "authentication": "jwtAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1968,
+        -1288
+      ],
+      "id": "95ab0806-d32d-4810-8646-e933ceb7d975",
+      "name": "Webhook",
+      "webhookId": "de6fb1be-8d95-4652-9c6d-7f8a96ffe26e",
+      "credentials": {
+        "jwtAuth": {
+          "id": "JnacoZZ8VefCM78Z",
+          "name": "JWT Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ictwenzel-1757079647758.atlassian.net/wiki/rest/api/content",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"page\",\n  \"title\": \"{{ $('Create Workflow ID').item.json.body.timestamp }}\",\n  \"space\": { \"key\": \"~tph\" },\n  \"body\": {\n    \"storage\": {\n      \"value\": \"{{ $json.content }}\",\n      \"representation\": \"storage\"\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1408,
+        -872
+      ],
+      "id": "83336830-edd2-463a-87d3-ad6640fa1bb2",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "nRHfkr2vJZ4KdGfD",
+          "name": "Confluence"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = items[0].json.body;\n\n// 1. Construct the raw HTML content string.\nconst html = $input.first().json.body.content;\n\n// 2. Prepare the payload with proper escaping and newline removal\n// This makes the string safe for inline insertion into a JSON string via expression.\nconst contentForJson = html.replace(/\"/g, '\\\\\"').replace(/\\n/g, '\\\\n');\n\nreturn [\n  {\n    json: {\n      content: contentForJson // Pass the escaped, single-line string\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        -872
+      ],
+      "id": "5176d666-10cd-49a7-826d-b4bc12cba3e6",
+      "name": "Convert Payload to Text for Confluence"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai/gpt-5",
+          "mode": "list",
+          "cachedResultName": "openai/gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1352,
+        -1936
+      ],
+      "id": "88d33f5c-cc45-4d23-af32-77446301b114",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "IWSN9jGhozLmIcCz",
+          "name": "Openrouter TPH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('createsessionid').item.json.sessionIdAnalyze }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1480,
+        -1936
+      ],
+      "id": "2c52bed5-57a0-4427-9d37-e9356ad7fd98",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Run Once Mode\nconst item = $input.all()[0].json;\n\n// Session-ID erzeugen\nitem.sessionIdAnalyze = \"analyze_\" + ($workflow.id || Date.now());\n\n\n\nreturn [{ json: item }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        -2056
+      ],
+      "id": "8c162aa4-0879-4700-a6e6-2e530704c6c7",
+      "name": "createsessionid"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Start').item.json.body_frage }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1344,
+        -2160
+      ],
+      "id": "7b7677e7-9ca3-49aa-8ad4-8d1bdb1022b1",
+      "name": "General AI Bot"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -400,
+        -1296
+      ],
+      "id": "81a7ba52-e4bf-4782-b2d5-018e1a28b17f",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "IWSN9jGhozLmIcCz",
+          "name": "Openrouter TPH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('sessionconfluence').item.json.sessionIdconfluence }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -272,
+        -1296
+      ],
+      "id": "85895acc-3b95-4050-be83-d6177288298c",
+      "name": "Simple Memory2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Run Once Mode\nconst item = $input.all()[0].json;\n\n// Session-ID erzeugen\nitem.sessionIdconfluence = \"analyze_\" + ($workflow.id || Date.now());\n\n\n\nreturn [{ json: item }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -624,
+        -1520
+      ],
+      "id": "7232cd79-a3a2-4fa8-827a-eb51e84202e6",
+      "name": "sessionconfluence"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Im Folgenden erhältst du eine Liste welche Pages und deren URL im internen Wikis vorhanden sowie eine Nutzerfrage.\nDu fungierst dabei als vorbereitung interner WikiBot.\nDeine Aufgabe ist es, bassierdend auf der Nutzerfrage zu entscheiden welche Pages relevant sind. \nWenn die Antwort nicht eindeutig im Wiki enthalten ist, teile mit, dass diese Information im Wiki nicht vorhanden ist.\nDeine Antwort wird ausschliesslich nur auf die exakten urls der Pages beziehen, die du vorfinden konntest. Kein davor oder dannach ausschliesslich nur die URL der von dir validierten relevanten Page. Beachte dabei die URL in [] nicht in ()\nZB:\n\n|\\n| Confluence mit n8n verbinden | [https://ictwenzel-1757079647758.atlassian.net/wiki/spaces/\\~tph/pages/2195457/Confluence+mit+n8n+verbinden](https://ictwenzel-1757079647758.atlassian.net/wiki/spaces/~7120207ae6df5133a7488686ad84bd53180bfd/pages/2195457 \"https://ictwenzel-1757079647758.atlassian.net/wiki/spaces/~7120207ae6df5133a7488686ad84bd53180bfd/pages/2195457\") \n\ndann ist die URL =\n\nhttps://ictwenzel-1757079647758.atlassian.net/wiki/spaces/~tph/pages/2195457/Confluence+mit+n8n+verbinden\n\nHier das Wiki:\n{{ $json.Internalwiki }}\n\nHier die Userfrage:\n{{ $json.userfrage }}\n\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -344,
+        -1520
+      ],
+      "id": "ed0c0d6f-ce4f-4b3c-b8bd-8e89b3f6967e",
+      "name": "Ask Wiki Page"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1352,
+        -1536
+      ],
+      "id": "b4a3df56-fde3-4949-9535-4c48b7aae8b6",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "IWSN9jGhozLmIcCz",
+          "name": "Openrouter TPH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('sessionconfluence1').item.json.sessionIdconfluencePage }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1480,
+        -1536
+      ],
+      "id": "3a63ee1d-e7ee-4722-97e1-bc5d1a50416f",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Im Folgenden erhältst du den gesamten Inhalt eines internen Wikis sowie eine Nutzerfrage.\nDu fungierst dabei als interner WikiBot.\nDeine Aufgabe ist es, die Nutzerfrage ausschließlich auf Basis des bereitgestellten Wikis zu beantworten.\nWenn die Antwort nicht eindeutig im Wiki enthalten ist, teile mit, dass diese Information im Wiki nicht vorhanden ist.\nFormuliere die Antwort klar, präzise und im sachlichen Stil. Du musst die Frage bassierend auf dem Wiki beantworten und nicht nur sagen wo mann infos findet.\n\nHier das Wiki:\n{{ $json.Internalwiki[0].data }}\n\nHier die Userfrage:\n{{ $json.userfrage }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1344,
+        -1760
+      ],
+      "id": "a9edf0b1-a697-4122-b4d3-22f166f59e78",
+      "name": "Ask Confluence"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Run Once Mode\nconst item = $input.all()[0].json;\n\n// Session-ID erzeugen\nitem.sessionIdconfluencePage = \"analyze_page_\" + ($workflow.id || Date.now());\n\n\n\nreturn [{ json: item }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        -1656
+      ],
+      "id": "268b6613-59a7-45f4-9f4b-f1844d5383a6",
+      "name": "sessionconfluence1"
+    },
+    {
+      "parameters": {
+        "url": "https://ictwenzel-1757079647758.atlassian.net/wiki/spaces/~tph/pages/2129921/Wiki?expand=body.view",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1296,
+        -1520
+      ],
+      "id": "b4cee79b-bd59-4693-bf20-1e62efad6441",
+      "name": "Get Wiki Page",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "nRHfkr2vJZ4KdGfD",
+          "name": "Confluence"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json[\"output.urls\"] }}?expand=body.view",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        -1464
+      ],
+      "id": "0f10d2eb-2142-46cf-bc92-fb1b058393f6",
+      "name": "Get specific confluencepage",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "nRHfkr2vJZ4KdGfD",
+          "name": "Confluence"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let wiki = $input.first().json.data\nlet frage = $('Start').first().json.body_frage_firstItem\n\n// Prompt zusammensetzen\nlet prompt = {\n  Internalwiki: wiki,\n  userfrage: frage\n};\n\nreturn [{ json: prompt }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        -1656
+      ],
+      "id": "a8c8822a-da71-44b3-93b6-55e839cf8334",
+      "name": "Prompt2"
+    },
+    {
+      "parameters": {
+        "jsCode": "let wiki = $input.first().json.data\nlet frage = $('Start').first().json.body_frage_firstItem\n\n// Prompt zusammensetzen\nlet prompt = {\n  Internalwiki: wiki,\n  userfrage: frage\n};\n\nreturn [{ json: prompt }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -848,
+        -1520
+      ],
+      "id": "1307a720-c0d2-4147-beab-1b4d5e593875",
+      "name": "Build Prompt for Preperation Bot"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"urls\": [\n    \"https://example.com/1\",\n    \"https://example.com/2\",\n    \"https://example.com/3\"\n  ]\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -144,
+        -1296
+      ],
+      "id": "fa36f5ca-1e9e-4048-98f2-505ac5b8c6e0",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.urls",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        224,
+        -1520
+      ],
+      "id": "cb5c1e35-52e5-4ed5-bef6-10c70ae0d34b",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        448,
+        -1520
+      ],
+      "id": "ef9bb262-3dd6-4571-84f4-3a79a9c3c5e3",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.data }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        -1072,
+        -1520
+      ],
+      "id": "d596e70c-b1aa-4389-b3dd-ecc8da224bde",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.data }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        896,
+        -1408
+      ],
+      "id": "fa613715-717b-436d-9f2a-617efd5df971",
+      "name": "Markdown1"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -1656
+      ],
+      "id": "be245a53-3eb5-4188-ab11-aade38b29de7",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        -1088
+      ],
+      "id": "d976b321-7ac5-45fb-a54e-22b46389f192",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "IWSN9jGhozLmIcCz",
+          "name": "Openrouter TPH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1352,
+        -1048
+      ],
+      "id": "06c2a89d-68ce-4138-9b30-f736b9909908",
+      "name": "OpenAI Chat Model4",
+      "credentials": {
+        "openAiApi": {
+          "id": "IWSN9jGhozLmIcCz",
+          "name": "Openrouter TPH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('createsession').item.json.sessionIdticket }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1480,
+        -1048
+      ],
+      "id": "f155f667-8c50-49ee-9911-7714264f2e25",
+      "name": "Simple Memory4"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Run Once Mode\nconst item = $input.all()[0].json;\n\n// Session-ID erzeugen\nitem.sessionIdticket = \"analyze_\" + ($workflow.id || Date.now());\n\n\n\nreturn [{ json: item }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        -1168
+      ],
+      "id": "f87bbbcc-60fb-4723-8443-405be58a98d3",
+      "name": "createsession"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Du bist ein Dokumentation Bot:\nErstelle aus dem kommenden User input eine Strukturierte Doku und zeige auf was noch fehlen könnte.\nHier der Userinput:\n\n\n{{ $('Start').item.json.body_frage }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1344,
+        -1272
+      ],
+      "id": "b64279b1-a033-492a-80c0-c58ffbc982fc",
+      "name": "Write Dokumentation"
+    }
+  ],
+  "connections": {
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "createsessionid",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Wiki Page",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "createsession",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Convert Payload to Text for Confluence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Workflow ID": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Create Workflow ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Convert Payload to Text for Confluence": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "General AI Bot",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "General AI Bot",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "createsessionid": {
+      "main": [
+        [
+          {
+            "node": "General AI Bot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "General AI Bot": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Ask Wiki Page",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "Ask Wiki Page",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sessionconfluence": {
+      "main": [
+        [
+          {
+            "node": "Ask Wiki Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask Wiki Page": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Ask Confluence",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Ask Confluence",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask Confluence": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "sessionconfluence1": {
+      "main": [
+        [
+          {
+            "node": "Ask Confluence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Wiki Page": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get specific confluencepage": {
+      "main": [
+        [
+          {
+            "node": "Markdown1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt2": {
+      "main": [
+        [
+          {
+            "node": "sessionconfluence1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Prompt for Preperation Bot": {
+      "main": [
+        [
+          {
+            "node": "sessionconfluence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Ask Wiki Page",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get specific confluencepage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Build Prompt for Preperation Bot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Prompt2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Write Dokumentation",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory4": {
+      "ai_memory": [
+        [
+          {
+            "node": "Write Dokumentation",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "createsession": {
+      "main": [
+        [
+          {
+            "node": "Write Dokumentation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Dokumentation": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "10aafdbbe3e73ae13c4cacf000f6a77fac368172af43a62845c00bb0117582a1"
+  }
+}
